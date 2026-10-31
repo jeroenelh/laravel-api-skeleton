@@ -1,0 +1,31 @@
+deptrac:
+  paths:
+    - ./src
+  layers:
+    - name: Domain
+      collectors:
+        - { type: classNameRegex, value: '#^App\\[^\\]+\\Domain\\#' }
+    - name: Application
+      collectors:
+        - { type: classNameRegex, value: '#^App\\[^\\]+\\Application\\#' }
+    - name: Infrastructure
+      collectors:
+        - { type: classNameRegex, value: '#^App\\[^\\]+\\Infrastructure\\#' }
+    - name: Interfaces
+      collectors:
+        - { type: classNameRegex, value: '#^App\\[^\\]+\\Interfaces\\#' }
+    - name: Framework
+      collectors:
+        - { type: classNameRegex, value: '#^(Illuminate|Laravel|Symfony)\\#' }
+  ruleset:
+    Domain: ~
+    Application:
+      - Domain
+    Infrastructure:
+      - Domain
+      - Application
+      - Framework
+    Interfaces:
+      - Domain
+      - Application
+      - Framework

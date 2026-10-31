@@ -1,0 +1,38 @@
+# Dependencies between bounded contexts. deptrac.yaml checks the layers inside a context.
+#
+# A context may use its own code, the Application layer of another context, and all of Shared.
+# Shared uses no other context.
+#
+# Adding a context: add its two layers below, allow them in the ruleset, and add its name to
+# the Unregistered layer. Until then, every dependency of the new context is a violation.
+deptrac:
+  paths:
+    - ./src
+  layers:
+    - name: Shared
+      collectors:
+        - { type: classNameRegex, value: '#^App\\Shared\\#' }
+    - name: AuthPublic
+      collectors:
+        - { type: classNameRegex, value: '#^App\\Auth\\Application\\#' }
+    - name: AuthInternal
+      collectors:
+        - { type: classNameRegex, value: '#^App\\Auth\\(Domain|Infrastructure|Interfaces)\\#' }
+    - name: Unregistered
+      collectors:
+        - { type: classNameRegex, value: '#^App\\(?!(Shared|Auth)\\)#' }
+    - name: External
+      collectors:
+        - { type: classNameRegex, value: '#^(?!App\\)#' }
+  ruleset:
+    Unregistered: ~
+    Shared:
+      - External
+    AuthPublic:
+      - AuthInternal
+      - Shared
+      - External
+    AuthInternal:
+      - AuthPublic
+      - Shared
+      - External
